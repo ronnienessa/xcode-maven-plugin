@@ -57,9 +57,20 @@ class XCodeBuildLayout
   // TODO invent better method name
   static File getAppFolder(final File baseDirectory, final String configuration, final String sdk)
   {
-    return new File(getBuildDir(baseDirectory), configuration + "-" + sdk);
+    return new File(getBuildDir(baseDirectory), configuration + "-" + stripVersionNumberFromSdk(sdk));
   }
 
+  private static String stripVersionNumberFromSdk(final String sdk) {
+		if (sdk.contains("iphoneos")) {
+			return "iphoneos";
+		} else if (sdk.contains("iphonesimulator")) {
+			return "iphonesimulator";
+		} else if (sdk.contains("macosx")) {
+			return "macosx";
+		} else {
+			return sdk; //Should we throw here?
+		}
+	}
   static File getBuildDir(final File baseDirectory)
   {
 
