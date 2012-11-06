@@ -65,9 +65,12 @@ public class XCodePackageAppStoreMetaDataMojo extends AbstractXCodeMojo
   {
 
     try {
-
-      packageAndAttachAppStoreMetaData();
-
+     	for (final String sdk : getSDKs())
+	    {
+	  		if (sdk.startsWith("iphoneos")) {
+	  			packageAndAttachAppStoreMetaData(sdk);
+	  		}
+	    }
     }
     catch (IOException e) {
       throw new MojoExecutionException(e.getMessage(), e);
@@ -81,11 +84,11 @@ public class XCodePackageAppStoreMetaDataMojo extends AbstractXCodeMojo
 
   }
 
-  private void packageAndAttachAppStoreMetaData() throws IOException, NoSuchArchiverException, ArchiverException,
+  private void packageAndAttachAppStoreMetaData(String sdk) throws IOException, NoSuchArchiverException, ArchiverException,
         MojoExecutionException
   {
 
-    final String bundleIdentifier = getBundleIdentifier();
+    final String bundleIdentifier = getBundleIdentifier(sdk);
 
     final File appStoreMetaDataFolder = new File(appStoreMetadata, bundleIdentifier);
 
@@ -110,12 +113,12 @@ public class XCodePackageAppStoreMetaDataMojo extends AbstractXCodeMojo
 
   }
 
-  private String getBundleIdentifier() throws MojoExecutionException
+  private String getBundleIdentifier(String sdk) throws MojoExecutionException
   {
     String bundleIdentifier = null;
     for (String configuration : getConfigurations()) {
       try {
-        PListAccessor plistAccessor = getInfoPListAccessor(getXCodeSourceDirectory(), configuration, "iphoneos");
+        PListAccessor plistAccessor = getInfoPListAccessor(getXCodeSourceDirectory(), configuration, sdk);
         String _bundleIdentifier = plistAccessor.getStringValue(PListAccessor.KEY_BUNDLE_IDENTIFIER);
 
         if (bundleIdentifier == null)
